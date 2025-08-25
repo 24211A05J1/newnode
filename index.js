@@ -4,9 +4,15 @@ import userRoutes from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";    
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 dotenv.config();
 const server = express();
+server.use(express.static(path.join(__dirname, 'public')));
 const port = process.env.PORT || 5000;
 const mongoURI = process.env.mongoURI;
 

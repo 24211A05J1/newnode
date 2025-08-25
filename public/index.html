@@ -1,16 +1,123 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greeting app</title>
+    <title>Sign In</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .card {
+            background: #fff;
+            padding: 2rem 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        input[type="text"], input[type="email"] {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="email"]:focus {
+            border-color: #74ebd5;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: #74ebd5;
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #57c6e1;
+        }
+        .message {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+        @media (max-width: 500px) {
+            .card {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Enter your name to get greeted</h1>
-    <form action="/submit" method="POST"> 
-        <input type="text" name="name" placeholder="whats your name" required>
-        <button type="submit">Enter</button>
-    </form>
-
+    <div class="card">
+        <h2>Sign In</h2>
+        <form id="signInForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+        <div class="message" id="message"></div>
+    </div>
+    <script>
+        document.getElementById('signInForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = '';
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email })
+                });
+                if (response.ok) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Sign in successful!';
+                    document.getElementById('signInForm').reset();
+                } else {
+                    const data = await response.json();
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = data.message || 'Sign in failed.';
+                }
+            } catch (err) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Error connecting to server.';
+            }
+        });
+    </script>
 </body>
 </html>
